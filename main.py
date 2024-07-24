@@ -192,7 +192,7 @@ def mostrarMenu():
 
     return nome_jogador
 
-
+# Mostra a tela e a mensagem de game over
 def mostrarGameOver(nome_jogador, score):
     global screen_width, screen_height, screen
     game_over = True
