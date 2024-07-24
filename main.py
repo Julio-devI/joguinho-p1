@@ -101,6 +101,23 @@ class Inimigo:
     def aumentar_velocidade(self, incremento):
         self.velocidade += incremento
 
+def lerRecorde():
+    recordes = []
+    try:
+        with open('recordes.txt', 'r') as arquivo:
+            for linha in arquivo:
+                # Dividir a linha no formato nome : recorde
+                nome_jogador, recorde = linha.strip().split(' : ')
+                # pega os dados do txt e adiciona no array
+                recordes.append((nome_jogador, int(recorde)))
+    except (FileNotFoundError, ValueError):
+        pass # Se o arquivo nao existe retorna vazio
+    return recordes
+
+def salvarRecorde(nome_jogador, recorde):
+    with open('recordes.txt', 'a') as arquivo:
+        arquivo.write(f"{nome_jogador} : {recorde}\n")
+
 def mostrarPlacar(score):
     placar = fonte.render(f"Score: {score}", True, black)
     screen.blit(placar, (10, 10))
@@ -121,6 +138,9 @@ def mostrarMenu():
     cor_ativo = pygame.Color('dodgerblue2')
     cor = cor_inativo
     ativo = False
+
+    recorde = lerRecorde()
+    maior_recorde = max((rec[1] for rec in recorde), default=0)
 
     while menu:
         for event in pygame.event.get():
@@ -163,6 +183,10 @@ def mostrarMenu():
         play_button_rect = play_button.get_rect(center=(screen_width // 2, screen_height // 2 + 80))
         screen.blit(play_button, play_button_rect.topleft)
 
+        recorde_text = fonte.render(f"Maior recorde: {maior_recorde}", True, black)
+        recorde_rect = recorde_text.get_rect(center=(screen_width // 2, screen_height // 2 + 130))
+        screen.blit(recorde_text, recorde_rect.topleft)
+
         pygame.display.flip()
         pygame.time.Clock().tick(30)
 
@@ -172,6 +196,10 @@ def mostrarMenu():
 def mostrarGameOver(nome_jogador, score):
     global screen_width, screen_height, screen
     game_over = True
+    recorde = lerRecorde()
+    maior_recorde = max((rec[1] for rec in recorde), default=0)
+
+    salvarRecorde(nome_jogador, score)
 
     while game_over:
         for event in pygame.event.get():
@@ -187,6 +215,10 @@ def mostrarGameOver(nome_jogador, score):
             score_text = fonte.render(f"Score: {score}", True, black)
             score_rect = score_text.get_rect(center=(screen_width // 2, screen_height // 2))
             screen.blit(score_text, score_rect.topleft)
+
+            recorde_text = fonte.render(f"Maior Recorde: {maior_recorde}", True, black)
+            recorde_rect = recorde_text.get_rect(center=(screen_width // 2, screen_height // 2 + 30))
+            screen.blit(recorde_text, recorde_rect.topleft)
 
             play_button = fonte.render('Voltar ao Menu', True, black)
             play_button_rect = play_button.get_rect(center=(screen_width // 2, screen_height // 2 + 50))
