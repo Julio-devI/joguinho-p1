@@ -78,6 +78,7 @@ class Inimigo:
         self.x = screen_width
         self.y = screen_height - inimigo_altura - 10
         self.passou = False
+        self.velocidade = 10
 
         self.inimigo_animacao_inicial = 0
         self.inimigo_velocidade_animacao = 0.2
@@ -87,7 +88,7 @@ class Inimigo:
         screen.blit(inimigo_animacao[self.inimigo_animacao_inicial], (self.x, self.y))
 
     def update(self):
-        self.x -= 10
+        self.x -= self.velocidade
         if self.x < -inimigo_largura:
             self.x = screen_width + random.randint(100, 300)
             self.passou = False
@@ -97,6 +98,8 @@ class Inimigo:
             self.inimigo_contador_animacao = 0
             self.inimigo_animacao_inicial = (self.inimigo_animacao_inicial + 1) % len(inimigo_animacao)
 
+    def aumentar_velocidade(self, incremento):
+        self.velocidade += incremento
 
 def mostrarPlacar(score):
     placar = fonte.render(f"Score: {score}", True, black)
@@ -205,6 +208,7 @@ def loopInfinito(nome_jogador):
     inimigo = [Inimigo()]
     score = 0
     game_over = False
+    incremento_velocidade = 0.5
 
     while not game_over:
         for event in pygame.event.get():
@@ -232,6 +236,10 @@ def loopInfinito(nome_jogador):
             if i.x + inimigo_largura < mario.x and not i.passou:
                 score += 1
                 i.passou = True
+
+                # Chama a função da classe inimigo que incrementa sobre a variável e aumenta a velocidade dos inimigos
+                for recebe in inimigo:
+                    recebe.aumentar_velocidade(incremento_velocidade)
             if mario.x < i.x < mario.x + mario_largura and mario.y + mario_altura > i.y:
                 game_over = True
 
